@@ -4,14 +4,14 @@
  */
 
 import React from 'react';
-import { Navbar } from './components/Navbar.tsx';
-import { Hero } from './components/Hero.tsx';
-import { VanlifeMoments } from './components/VanlifeMoments.tsx';
-import { WoodShowcase } from './components/WoodShowcase.tsx';
-import { ElectricalSystem } from './components/ElectricalSystem.tsx';
-import { AutarkyDashboard } from './components/AutarkyDashboard.tsx';
-import { ContactForm } from './components/ContactForm.tsx';
-import { Footer } from './components/Footer.tsx';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { VanlifeMoments } from './components/VanlifeMoments';
+import { WoodShowcase } from './components/WoodShowcase';
+import { ElectricalSystem } from './components/ElectricalSystem';
+import { AutarkyDashboard } from './components/AutarkyDashboard';
+import { ContactForm } from './components/ContactForm';
+import { Footer } from './components/Footer';
 
 export default function App() {
   return (

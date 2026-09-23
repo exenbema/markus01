@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NatureAudioPlayer } from './NatureAudioPlayer.tsx';
+import { NatureAudioPlayer } from './NatureAudioPlayer';
 import { Menu, X } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
