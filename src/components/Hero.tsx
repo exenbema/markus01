@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Compass, ShieldCheck, SunMedium } from 'lucide-react';
-import heroImg from '../assets/images/hero_camper_nature_1790157555473.jpg';
+import heroImg from '../assets/images/hero_camper_clean_1790181474759.jpg';
 
 export const Hero: React.FC = () => {
   return (
