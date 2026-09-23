@@ -190,7 +190,7 @@ export const WoodShowcase: React.FC = () => {
               <div className="p-6 bg-white">
                 <div className="flex items-center justify-between text-xs text-[#6B5C51] mb-2">
                   <span>Haptik &amp; Kantenbearbeitung</span>
-                  <span>Meisterhandwerk</span>
+                  <span>Handwerk</span>
                 </div>
                 <h4 className="text-lg font-serif font-semibold text-[#2C241F]">
                   Handschmeichler mit samtiger Seidenmatt-Oberfläche
