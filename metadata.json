@@ -1,0 +1,6 @@
+{
+  "name": "Wohlfühl-Wohnmobil · Naturholz & Autarkie",
+  "description": "Reisen und Wohnen im gesunden Vollholz-Wohnmobil mit Fichte, Kiefer, Lärche, Pappel & Eiche, Auro Naturölen, interaktivem Victron Autarkie-Dashboard und Kontaktformular.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
