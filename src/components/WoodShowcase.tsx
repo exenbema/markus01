@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import woodDetailImg from '../assets/images/wood_craft_details_1790157581859.jpg';
+import woodDetailImg from '../assets/images/regenerated_image_1790178150269.webp';
 import { Sparkles, Wind, Shield, CheckCircle2, Feather, Droplets } from 'lucide-react';
 
 interface WoodItem {
