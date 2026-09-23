@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Calendar, Heart, CheckCircle2, Download, Send, ArrowRight } from 'lucide-react';
+import { Mail, MessageSquare, Instagram, ExternalLink, Download, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface FormData {
   intent: 'urlaub' | 'probewohnen' | 'ausbau';
@@ -37,16 +37,47 @@ export const ContactForm: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
+  const intentLabels: Record<FormData['intent'], string> = {
+    urlaub: 'Wohnmobil mieten & urlauben',
+    probewohnen: 'Probewohnen & Besichtigung',
+    ausbau: 'Beratung für Holzausbau',
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
       setSubmitted(true);
+
+      // Mailto link trigger so the email client opens pre-filled for exenberger.markus@gmail.com
+      const subject = encodeURIComponent(`Anfrage Wohlraum Van: ${intentLabels[formData.intent]} (${formData.name})`);
+      const body = encodeURIComponent(
+        `Hallo Markus,\n\n` +
+        `hier ist eine neue Anfrage über das Wohlraum Van Kontaktformular:\n\n` +
+        `----------------------------------------\n` +
+        `Name: ${formData.name}\n` +
+        `E-Mail: ${formData.email}\n` +
+        `Telefon: ${formData.phone || 'Keine Angabe'}\n` +
+        `Anliegen: ${intentLabels[formData.intent]}\n` +
+        `Wunschzeitraum: ${formData.preferredSeason || 'Flexibel'}\n` +
+        `Favorisiertes Holz: ${formData.favoriteWood}\n\n` +
+        `Nachricht:\n${formData.message || 'Keine zusätzliche Nachricht angegeben.'}\n` +
+        `----------------------------------------\n\n` +
+        `Herzliche Grüße,\n${formData.name}`
+      );
+
+      // Trigger user's mail client directly to Markus Exenberger
+      window.location.href = `mailto:exenberger.markus@gmail.com?subject=${subject}&body=${body}`;
     }
   };
 
   const downloadChecklist = () => {
     const textContent = `WOHLFÜHL-WOHNMOBIL · AUSBAU & AUTARKIE-LEITFADEN
 =====================================================
+
+KONTAKTDATEN:
+E-Mail: exenberger.markus@gmail.com
+WhatsApp & Telegram: +43 6801573635
+Instagram: @tinyandvan (https://www.instagram.com/tinyandvan)
 
 1. DIE VERWENDETEN NATURHÖLZER:
 - Nordische Fichte: Decken & Wände (feuchtigkeitsregulierend, hell)
@@ -70,7 +101,7 @@ export const ContactForm: React.FC = () => {
 [ ] Kuscheldecke aus reiner Schurwolle
 
 Herzliche Grüße,
-Dein Wohlraum-Team`;
+Markus Exenberger · Wohlraum Van`;
 
     const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -85,7 +116,7 @@ Dein Wohlraum-Team`;
     <section id="kontakt" className="py-24 bg-[#FAF8F5]">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="text-xs uppercase tracking-widest text-[#577057] font-semibold mb-3">
             05. Der nächste Schritt
           </div>
@@ -94,8 +125,64 @@ Dein Wohlraum-Team`;
           </h2>
           <p className="mt-4 text-base text-[#6B5C51] leading-relaxed">
             Ob du einen unvergesslichen Urlaub planst, das Raumgefühl bei einem Probewohnen
-            erleben willst oder Inspiration für deinen eigenen Ausbau suchst: Schreib uns unkompliziert.
+            erleben willst oder Inspiration für deinen eigenen Ausbau suchst: Schreib mir unkompliziert direkt.
           </p>
+        </div>
+
+        {/* Direct Contact Badges / Quick Connect Channels */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {/* E-Mail Badge */}
+          <a
+            href="mailto:exenberger.markus@gmail.com"
+            className="group p-4 bg-white rounded-2xl border border-[#E8DFD5] hover:border-[#455B45] hover:shadow-sm transition-all flex items-center gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#E3EBE3] text-[#455B45] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] text-[#8C7A6E] font-medium">E-Mail direkt</div>
+              <div className="text-xs font-semibold text-[#2C241F] truncate group-hover:text-[#455B45] transition-colors">
+                exenberger.markus@gmail.com
+              </div>
+            </div>
+          </a>
+
+          {/* WhatsApp & Telegram Badge */}
+          <a
+            href="https://wa.me/436801573635?text=Hallo%20Markus%2C%20ich%20interessiere%20mich%20f%C3%BCr%20das%20Wohlf%C3%BChl-Wohnmobil%21"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group p-4 bg-white rounded-2xl border border-[#E8DFD5] hover:border-[#455B45] hover:shadow-sm transition-all flex items-center gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#EAF2E8] text-[#2E7D32] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] text-[#8C7A6E] font-medium">WhatsApp / Telegram</div>
+              <div className="text-xs font-semibold text-[#2C241F] group-hover:text-[#455B45] transition-colors">
+                +43 6801573635
+              </div>
+            </div>
+          </a>
+
+          {/* Instagram Badge */}
+          <a
+            href="https://www.instagram.com/tinyandvan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group p-4 bg-white rounded-2xl border border-[#E8DFD5] hover:border-[#455B45] hover:shadow-sm transition-all flex items-center gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#FCECEE] text-[#D81B60] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+              <Instagram className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] text-[#8C7A6E] font-medium">Instagram Inspiration</div>
+              <div className="text-xs font-semibold text-[#2C241F] group-hover:text-[#455B45] transition-colors flex items-center gap-1">
+                <span>@tinyandvan</span>
+                <ExternalLink className="w-3 h-3 text-[#A8988B]" />
+              </div>
+            </div>
+          </a>
         </div>
 
         {/* The Card */}
@@ -109,8 +196,12 @@ Dein Wohlraum-Team`;
                 Vielen Dank, {formData.name}!
               </h3>
               <p className="text-sm text-[#6B5C51] max-w-md mx-auto leading-relaxed">
-                Deine Anfrage ist bei uns eingegangen. Wir melden uns innerhalb von 24 Stunden persönlich bei dir,
-                damit deiner Reise in die Natur nichts im Wege steht.
+                Deine Anfrage wurde an <strong>exenberger.markus@gmail.com</strong> gesendet und dein E-Mail-Programm geöffnet.
+                Markus meldet sich verlässlich bei dir! Gerne kannst du auch direkt per WhatsApp unter{' '}
+                <a href="https://wa.me/436801573635" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#455B45] underline underline-offset-2">
+                  +43 6801573635
+                </a>{' '}
+                eine kurze Nachricht schreiben.
               </p>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -183,7 +274,7 @@ Dein Wohlraum-Team`;
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="z.B. Markus Huber"
+                    placeholder="z.B. Markus"
                     className={`w-full px-4 py-3 text-sm rounded-xl border bg-[#FAF8F5] focus:bg-white focus:outline-hidden transition-colors ${
                       errors.name ? 'border-[#B91C1C] ring-1 ring-[#B91C1C]' : 'border-[#DECFC1] focus:border-[#455B45]'
                     }`}
@@ -200,7 +291,7 @@ Dein Wohlraum-Team`;
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="hallo@deinedomain.de"
+                    placeholder="deine.mail@domain.com"
                     className={`w-full px-4 py-3 text-sm rounded-xl border bg-[#FAF8F5] focus:bg-white focus:outline-hidden transition-colors ${
                       errors.email ? 'border-[#B91C1C] ring-1 ring-[#B91C1C]' : 'border-[#DECFC1] focus:border-[#455B45]'
                     }`}
@@ -213,14 +304,14 @@ Dein Wohlraum-Team`;
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="contact-phone" className="block text-xs font-semibold text-[#2C241F] mb-1.5">
-                    Telefonnummer (optional)
+                    Telefonnummer (WhatsApp / Telegram)
                   </label>
                   <input
                     id="contact-phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+49 170 1234567"
+                    placeholder="+43 680 ... oder +49 ..."
                     className="w-full px-4 py-3 text-sm rounded-xl border border-[#DECFC1] bg-[#FAF8F5] focus:bg-white focus:border-[#455B45] focus:outline-hidden transition-colors"
                   />
                 </div>
@@ -269,7 +360,7 @@ Dein Wohlraum-Team`;
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Erzähl uns von deinem Reiseplan, deinen Wünschen an den Van oder Fragen zur Victron Elektroanlage..."
+                  placeholder="Erzähl mir von deinen Reiseplänen, Wünschen oder Fragen zum Vollholzausbau & zur Victron Autarkie-Technik..."
                   className="w-full px-4 py-3 text-sm rounded-xl border border-[#DECFC1] bg-[#FAF8F5] focus:bg-white focus:border-[#455B45] focus:outline-hidden transition-colors resize-none"
                 />
               </div>
@@ -277,7 +368,7 @@ Dein Wohlraum-Team`;
               {/* Action Button */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-xs text-[#6B5C51]">
-                  Unverbindlich &amp; kostenfrei. Wir schätzen Privatsphäre.
+                  Direkt an <strong>exenberger.markus@gmail.com</strong>
                 </div>
                 <button
                   type="submit"

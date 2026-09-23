@@ -59,18 +59,38 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Key Specs Mirror */}
-          <div className="md:col-span-4 space-y-3">
+          {/* Key Specs Mirror & Contact */}
+          <div className="md:col-span-4 space-y-4">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
-              Verbaute Autarkie-Technik
+              Direkter Kontakt &amp; Details
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#BFAEA0] font-mono">
-              <li>· 330 Ah LiFePO4 Batterie (4.224 Wh)</li>
-              <li>· Victron MultiPlus 12/3000/120</li>
-              <li>· Victron Orion XS 12/12-50A Booster</li>
-              <li>· Victron SmartSolar MPPT 100/50</li>
-              <li>· 700 W Monokristallin Dach-PV</li>
-            </ul>
+            <div className="space-y-2 text-xs text-[#BFAEA0]">
+              <div>
+                <span className="text-[#8F7E71] block text-[11px]">E-Mail</span>
+                <a href="mailto:exenberger.markus@gmail.com" className="text-white hover:text-[#BFAEA0] transition-colors font-medium">
+                  exenberger.markus@gmail.com
+                </a>
+              </div>
+              <div>
+                <span className="text-[#8F7E71] block text-[11px]">WhatsApp / Telegram</span>
+                <a href="https://wa.me/436801573635" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#BFAEA0] transition-colors font-medium">
+                  +43 6801573635
+                </a>
+              </div>
+              <div>
+                <span className="text-[#8F7E71] block text-[11px]">Instagram</span>
+                <a href="https://www.instagram.com/tinyandvan" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#BFAEA0] transition-colors font-medium">
+                  @tinyandvan
+                </a>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-[#3B322C]">
+              <div className="text-[11px] text-[#8F7E71] uppercase tracking-wider mb-1">Victron Autarkie-Setup</div>
+              <p className="text-xs text-[#A8988B] font-mono leading-relaxed">
+                330 Ah LiFePO4 · MultiPlus 3000 · Orion XS 50A · MPPT 100/50 · 700W PV
+              </p>
+            </div>
           </div>
         </div>
 

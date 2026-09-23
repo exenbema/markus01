@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Waves } from 'lucide-react';
 
 /**
- * Procedural soothing fireplace & nature breeze audio synthesizer
+ * Procedural soothing ocean waves (Meeresrauschen) sound synthesizer
  * using native Web Audio API (zero external network dependencies).
  */
 export const NatureAudioPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const crackleTimerRef = useRef<number | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const lfoTimerRef = useRef<number | null>(null);
 
   const startSound = () => {
     try {
@@ -19,79 +19,90 @@ export const NatureAudioPlayer: React.FC = () => {
 
       // Master gain
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.01, ctx.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 1.5);
+      masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
+      masterGain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 1.5);
       masterGain.connect(ctx.destination);
-      gainNodeRef.current = masterGain;
+      masterGainRef.current = masterGain;
 
-      // 1. Soft wind / warm air ambient noise (Brownian-ish filtered noise)
-      const bufferSize = ctx.sampleRate * 2;
+      // 1. Generate brownian noise buffer for deep soothing water mass
+      const bufferSize = ctx.sampleRate * 4;
       const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
       let lastOut = 0.0;
       for (let i = 0; i < bufferSize; i++) {
         const white = Math.random() * 2 - 1;
-        output[i] = (lastOut + 0.02 * white) / 1.02;
+        output[i] = (lastOut + 0.03 * white) / 1.03;
         lastOut = output[i];
-        output[i] *= 3.5; // boost volume
+        output[i] *= 3.0;
       }
 
-      const whiteNoise = ctx.createBufferSource();
-      whiteNoise.buffer = noiseBuffer;
-      whiteNoise.loop = true;
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
 
-      // Low pass filter for soft cozy warmth (like evening mountain breeze)
+      // Filter to shape water texture
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(320, ctx.currentTime);
+      filter.frequency.setValueAtTime(350, ctx.currentTime);
+      filter.Q.setValueAtTime(2.0, ctx.currentTime);
 
-      whiteNoise.connect(filter);
-      filter.connect(masterGain);
-      whiteNoise.start();
+      // Wave swell gain node
+      const swellGain = ctx.createGain();
+      swellGain.gain.setValueAtTime(0.15, ctx.currentTime);
 
-      // 2. Subtle periodic wood crackle / embers
-      const playCrackle = () => {
+      noiseSource.connect(filter);
+      filter.connect(swellGain);
+      swellGain.connect(masterGain);
+      noiseSource.start();
+
+      // 2. Slow periodic wave swell (LFO emulation via Web Audio parameter ramps)
+      let isRising = true;
+      const waveCycle = () => {
         if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') return;
-        const cCtx = audioCtxRef.current;
-        const popOsc = cCtx.createOscillator();
-        const popGain = cCtx.createGain();
+        const now = ctx.currentTime;
+        if (isRising) {
+          // Wave breaks and rushes onto the shore (3 to 4 seconds)
+          const swellDuration = 3.2;
+          swellGain.gain.cancelScheduledValues(now);
+          swellGain.gain.linearRampToValueAtTime(0.9, now + swellDuration);
 
-        popOsc.type = 'sine';
-        popOsc.frequency.setValueAtTime(200 + Math.random() * 300, cCtx.currentTime);
-        popOsc.frequency.exponentialRampToValueAtTime(80, cCtx.currentTime + 0.04);
+          filter.frequency.cancelScheduledValues(now);
+          filter.frequency.exponentialRampToValueAtTime(650, now + swellDuration);
 
-        popGain.gain.setValueAtTime(0.04 + Math.random() * 0.05, cCtx.currentTime);
-        popGain.gain.exponentialRampToValueAtTime(0.0001, cCtx.currentTime + 0.05);
+          isRising = false;
+          lfoTimerRef.current = window.setTimeout(waveCycle, swellDuration * 1000);
+        } else {
+          // Wave recedes slowly into the sea (4 to 5 seconds)
+          const recedeDuration = 4.2;
+          swellGain.gain.cancelScheduledValues(now);
+          swellGain.gain.linearRampToValueAtTime(0.12, now + recedeDuration);
 
-        popOsc.connect(popGain);
-        popGain.connect(masterGain);
+          filter.frequency.cancelScheduledValues(now);
+          filter.frequency.exponentialRampToValueAtTime(220, now + recedeDuration);
 
-        popOsc.start();
-        popOsc.stop(cCtx.currentTime + 0.06);
-
-        const nextTime = 400 + Math.random() * 1200;
-        crackleTimerRef.current = window.setTimeout(playCrackle, nextTime);
+          isRising = true;
+          lfoTimerRef.current = window.setTimeout(waveCycle, recedeDuration * 1000);
+        }
       };
 
-      playCrackle();
+      waveCycle();
       setIsPlaying(true);
     } catch {
-      // AudioContext policy fallback
       setIsPlaying(false);
     }
   };
 
   const stopSound = () => {
-    if (crackleTimerRef.current) {
-      clearTimeout(crackleTimerRef.current);
-      crackleTimerRef.current = null;
+    if (lfoTimerRef.current) {
+      clearTimeout(lfoTimerRef.current);
+      lfoTimerRef.current = null;
     }
-    if (gainNodeRef.current && audioCtxRef.current) {
-      gainNodeRef.current.gain.exponentialRampToValueAtTime(0.0001, audioCtxRef.current.currentTime + 0.5);
+    if (masterGainRef.current && audioCtxRef.current) {
+      masterGainRef.current.gain.exponentialRampToValueAtTime(0.0001, audioCtxRef.current.currentTime + 0.6);
       setTimeout(() => {
         audioCtxRef.current?.close();
         audioCtxRef.current = null;
-      }, 500);
+      }, 600);
     }
     setIsPlaying(false);
   };
@@ -106,7 +117,7 @@ export const NatureAudioPlayer: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      if (crackleTimerRef.current) clearTimeout(crackleTimerRef.current);
+      if (lfoTimerRef.current) clearTimeout(lfoTimerRef.current);
       audioCtxRef.current?.close();
     };
   }, []);
@@ -115,22 +126,22 @@ export const NatureAudioPlayer: React.FC = () => {
     <button
       onClick={toggleSound}
       type="button"
-      className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-300 border ${
+      className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-300 border cursor-pointer ${
         isPlaying
           ? 'bg-[#E3EBE3] border-[#728A71] text-[#2D3E2C] shadow-sm'
           : 'bg-[#F4EFEA]/80 border-[#DECFC1] text-[#69584D] hover:bg-[#EBE2D7] hover:text-[#382E28]'
       }`}
-      title={isPlaying ? 'Wohlfühl-Naturklänge pausieren' : 'Sanfte Naturklänge (Holzfeuer & Wind) abspielen'}
+      title={isPlaying ? 'Meeresrauschen pausieren' : 'Sanftes Meeresrauschen abspielen'}
     >
       {isPlaying ? (
         <>
           <Volume2 className="w-3.5 h-3.5 text-[#4E614D] animate-pulse" />
-          <span className="whitespace-nowrap">Naturklang aktiv</span>
+          <span className="whitespace-nowrap">Meeresrauschen aktiv</span>
         </>
       ) : (
         <>
           <VolumeX className="w-3.5 h-3.5 text-[#8C7A6E]" />
-          <span className="whitespace-nowrap">Klang zum Träumen</span>
+          <span className="whitespace-nowrap">Meeresrauschen</span>
         </>
       )}
     </button>
